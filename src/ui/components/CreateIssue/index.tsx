@@ -3,7 +3,7 @@ import Select from 'react-select';
 import IconSelect, { Option } from "../IconSelect";
 import IconMultiSelect from "../IconMultiSelect";
 import { useLinearAuth } from '../../hooks/useLinearAuth';
-import { getLinearTeams, getLinearTeamMetadata, createLinearIssue } from '../../queries';
+import { getLinearTeams, getLinearTeamMetadata, createLinearIssue, getLinearProjects } from '../../queries';
 import { LinearTeam, LinearTeamMetadata, WorkflowStates } from '../../types';
 import { getLinearUserInitials } from '../../utils';
 import { LinearUnassignedIcon, LinearEstimateIcon } from '../icons';
@@ -61,6 +61,8 @@ const CreateIssue = () => {
   const [priority, setPriority] = useState<Option | null>(null);
   const [status, setStatus] = useState<Option | null>(null);
   const [estimate, setEstimate] = useState<Option | null>(null);
+  const [projects, setProjects] = useState<Option[]>([]);
+  const [selectedProject, setSelectedProject] = useState<Option | null>(null);
   const [labels, setLabels] = useState<AssignedUser[]>([]);
   const [isSaving, setIsSaving] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -73,6 +75,12 @@ const CreateIssue = () => {
       setLoadingTeamMetadata(true)
       const data = await getLinearTeamMetadata(token, option.value)
       setSelectedTeam(data)
+      const projects = await getLinearProjects(token, option.value)
+      setProjects(projects.map(project => ({
+        label: project.name,
+        value: project.id,
+        icon: null
+      })))
     } catch (error: any) {
       console.error("error doing 'onTeamChange'", error)
       if (error.message === "AUTHENTICATION_ERROR") {
@@ -114,7 +122,17 @@ const CreateIssue = () => {
     { label: 'High', value: 2, icon: LinearHighPriorityIcon },
     { label: 'Urgent', value: 1, icon: LinearUrgentPriorityIcon },
   ]
-  
+
+  const PROJECT_OPTIONS = useMemo(() => {
+    if (!projects) return [];
+
+    return projects.map(({label, value, icon}: Option) => ({
+      label,
+      value,
+      icon
+    }))
+  }, [projects])
+
   const STATUS_OPTIONS = useMemo(() => {
     if (!selectedTeam) return []
   
@@ -217,6 +235,7 @@ const CreateIssue = () => {
         description,
         estimate: estimateValue,
         userId: assignedUser?.value ? assignedUser.value : undefined,
+        projectId: selectedProject?.value ? selectedProject.value : undefined,
         priorityNumber: priority?.value,
         stateId: status?.value || selectedTeam?.defaultIssueState?.id,
         labelIds: labels.map(label => label.value),
@@ -343,13 +362,23 @@ const CreateIssue = () => {
                 options={ESTIMATE_OPTIONS}
               />
             )}
+            
+          </div>
+          <div className={style.formGroup}>
+            <div className={style.selectOptions}>
             <IconSelect
               isDisabled={isSaving}
               defaultValue={USERS[0]}
               onChange={setAssignedUser}
               options={USERS}
             />
-          
+            <IconSelect
+              isDisabled={isSaving}
+              defaultValue={PROJECT_OPTIONS[0]}
+              onChange={setSelectedProject}
+              options={PROJECT_OPTIONS}
+            />
+            </div>
           </div>
 
          {figmaFileId && (

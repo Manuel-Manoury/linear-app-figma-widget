@@ -14,7 +14,7 @@ attachmentLinkURL(
 }
 `
 export const createTicketMutation = (includeAttachment: boolean) => `
-mutation ($issueId: String!, $title: String!, $description: String!, $estimate: Int, $teamId: String!,$userId: String, $priorityNumber: Int, ${includeAttachment ?  '$linkedFigmaURL: String!,': ''} $stateId: String!, $labelIds: [String!]) {
+mutation ($issueId: String!, $title: String!, $description: String!, $estimate: Int, $teamId: String!, $projectId: String, $userId: String, $priorityNumber: Int, ${includeAttachment ?  '$linkedFigmaURL: String!,': ''} $stateId: String!, $labelIds: [String!]) {
   issueCreate(
     input: {
       id: $issueId
@@ -22,6 +22,7 @@ mutation ($issueId: String!, $title: String!, $description: String!, $estimate: 
       description: $description
       estimate: $estimate
       teamId: $teamId
+      projectId: $projectId
       assigneeId: $userId
       priority: $priorityNumber
       stateId: $stateId
@@ -43,6 +44,9 @@ mutation ($issueId: String!, $title: String!, $description: String!, $estimate: 
           issueEstimationExtended
           defaultIssueEstimate
           issueEstimationType
+        }
+        project {
+          name
         }
         labels {
             nodes {
@@ -78,6 +82,7 @@ interface CreateTicketInput {
   title: string;
   description: string;
   estimate?: number;
+  projectId?: string;
   userId?: string;
   priorityNumber?: string;
   stateId?: string;
@@ -86,7 +91,7 @@ interface CreateTicketInput {
 }
 export const createLinearIssue = async (input: CreateTicketInput) => {
   try {
-    const { token, teamId, title, description, estimate, userId, priorityNumber, stateId, labelIds, linkedFigmaURL } = input
+    const { token, teamId, title, description, estimate, projectId, userId, priorityNumber, stateId, labelIds, linkedFigmaURL } = input
 
     const issueId = uuidv4();
     const includeAttachment = Boolean(linkedFigmaURL);
@@ -102,6 +107,7 @@ export const createLinearIssue = async (input: CreateTicketInput) => {
           title,
           description,
           estimate,
+          projectId,
           userId,
           priorityNumber,
           stateId,

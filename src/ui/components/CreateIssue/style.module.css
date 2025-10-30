@@ -102,7 +102,7 @@
 }
 .descriptionInput {
   resize: none;
-  height: 250px;
+  height: 220px;
   overflow: scroll;
 }
 .descriptionInput[contenteditable=true]:empty:before{

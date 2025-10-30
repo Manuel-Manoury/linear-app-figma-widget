@@ -15,6 +15,12 @@ Figma Widget Link: https://www.figma.com/community/widget/1225499170325764543
 2. `yarn dev`
 3. In Figma: `Import widget from manifest...`
 
+## To Run Storybook
+1. `yarn`
+2. `yarn storybook`
+
+If you have an OpenSSL error (eg. `ERR_OSSL_EVP_UNSUPPORTED`), then use `NODE_OPTIONS=--openssl-legacy-provider yarn storybook`
+
 ## How to run development server
 To use the widget you will need a valid linear API token. You can get this by generating a developer token in the Linear app settings, and then in the Figma console paste in `figma.clientStorage.setAsync('figma-file-id', <LINEAR_API_TOKEN>)`. If you want to use the Oauth flow:
 

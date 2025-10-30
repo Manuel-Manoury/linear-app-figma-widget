@@ -4,3 +4,4 @@ dist-server
 server/node_modules
 .vscode
 .env
+.yarn-error.log

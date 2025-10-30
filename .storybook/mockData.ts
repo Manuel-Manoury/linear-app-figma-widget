@@ -2,6 +2,7 @@ import * as GetLinearTeams from "../src/ui/queries/getLinearTeams";
 import * as GetLinearTeamMetadata from "../src/ui/queries/getLinearTeamMetadata";
 import * as GetLinearIssue from "../src/ui/queries/getLinearIssue";
 import * as CreateLinearIssue from "../src/ui/queries/createLinearIssue"
+import * as GetLinearProjects from "../src/ui/queries/getLinearProjects"
 
 const mockTeamsData = {
   data: {
@@ -128,6 +129,27 @@ const mockCreateIssueData = {
   }
 }
 
+const mockProjectsData = {
+  data: {
+    team: {
+      projects: {
+        nodes: [
+          {
+            id: '1',
+            name: 'Project 1',
+          },{
+            id: '2',
+            name: 'Project 2',
+          },{
+            id: '3',
+            name: 'Project 3',
+          }
+        ]
+      }
+    }
+  }
+}
+
 export const mockGraphqlResponse = (request: { body: string }) => {
   const { body } = request
   
@@ -142,6 +164,8 @@ export const mockGraphqlResponse = (request: { body: string }) => {
       return null;
     case CreateLinearIssue.createTicketMutation(false):
       return mockCreateIssueData;
+    case GetLinearProjects.query:
+      return mockProjectsData;
     default:
       return null;
   }

@@ -84,3 +84,8 @@ export interface LinearIssue {
     avatarUrl: string;
   } | null
 }
+
+export interface LinearProject {
+  id: string;
+  name: string;
+}
